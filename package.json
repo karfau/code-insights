@@ -1,0 +1,29 @@
+{
+  "name": "code-insights",
+  "version": "0.0.0",
+  "description": "trying to automate code/vcs analysis inpired by code-maat and the book \"Your code as a crime scene\"",
+  "scripts": {
+    "tsc": "tsc",
+    "commits": "ts-node src/commits",
+    "test": "exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/karfau/code-insights.git"
+  },
+  "author": "karfau <coder@karfau.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/karfau/code-insights/issues"
+  },
+  "homepage": "https://github.com/karfau/code-insights#readme",
+  "devDependencies": {
+    "@types/node": "^9.3.0",
+    "nodemon": "^1.14.11",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.6.2"
+  },
+  "dependencies": {
+    "simple-git": "^1.85.0"
+  }
+}
