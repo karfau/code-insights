@@ -24,6 +24,10 @@
     "typescript": "^2.6.2"
   },
   "dependencies": {
+    "@types/dotenv": "^4.0.2",
+    "@types/make-dir": "^1.0.3",
+    "dotenv": "^4.0.0",
+    "make-dir": "^1.1.0",
     "simple-git": "^1.89.0"
   }
 }
