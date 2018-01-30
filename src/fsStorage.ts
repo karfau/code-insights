@@ -1,6 +1,7 @@
-import {createHash} from "crypto";
-import {existsSync} from "fs";
+import {createHash} from 'crypto';
+import * as fs from 'fs-extra';
 import {isAbsolute, resolve} from 'path';
+import {RepoStatus} from './types';
 
 export const resolveRepoWorkingDir = (
   repositoryID: string, dataPath: string, currentDir: string = process.cwd()
@@ -14,6 +15,12 @@ export const resolveRepoWorkingDir = (
 export const resolveIfRelative = (
   pathOrUrl: string, currentDir: string = process.cwd()
 ): string => {
-  const isRelativePath = existsSync(pathOrUrl) && !isAbsolute(pathOrUrl);
-  return isRelativePath ? resolve(currentDir, pathOrUrl) : pathOrUrl
+  const isRelativePath = fs.existsSync(pathOrUrl) && !isAbsolute(pathOrUrl);
+  return isRelativePath ? resolve(currentDir, pathOrUrl) : pathOrUrl;
 };
+
+export const storeRepoStatus = (file: string, status: RepoStatus) =>
+  fs.writeJSONSync(file, status, {spaces: 2});
+
+export const readRepoStatus = (file: string, defaultStatus: RepoStatus): RepoStatus =>
+  fs.pathExistsSync(file) ? fs.readJSONSync(file) : defaultStatus;

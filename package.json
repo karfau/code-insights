@@ -4,8 +4,8 @@
   "description": "trying to automate code/vcs analysis inpired by code-maat and the book \"Your code as a crime scene\"",
   "scripts": {
     "tsc": "tsc",
-    "commits": "ts-node src/commits",
-    "test": "exit 1"
+    "revisions": "ts-node --project tsconfig.scripts.json src/revisions",
+    "test": "mocha --opts mocha.opts"
   },
   "repository": {
     "type": "git",
@@ -18,16 +18,22 @@
   },
   "homepage": "https://github.com/karfau/code-insights#readme",
   "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/dotenv": "^4.0.2",
+    "@types/fs-extra": "^5.0.0",
+    "@types/lodash": "^4.14.98",
+    "@types/mocha": "^2.2.47",
     "@types/node": "^9.3.0",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.0",
     "nodemon": "^1.14.11",
-    "ts-node": "^4.1.0",
     "typescript": "^2.6.2"
   },
   "dependencies": {
-    "@types/dotenv": "^4.0.2",
-    "@types/make-dir": "^1.0.3",
     "dotenv": "^4.0.0",
-    "make-dir": "^1.1.0",
-    "simple-git": "^1.89.0"
+    "fs-extra": "^5.0.0",
+    "lodash": "^4.17.4",
+    "simple-git": "^1.89.0",
+    "ts-node": "^4.1.0"
   }
 }

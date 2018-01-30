@@ -1,0 +1,30 @@
+import * as git from 'simple-git/promise';
+import {Revision} from './types';
+
+export const isRepoRoot = async (path: string): Promise<boolean> => {
+  const repo = git(path);
+  // in case the target path is inside another git repo, checkIsRepo returns true,
+  // but we want to know if target is actually the root of a git repo
+  return await repo.checkIsRepo() && (await repo.revparse(['--show-toplevel'])).trim() === path;
+};
+
+export const createLocalRepo = async (repoRoot: string, remote: string, branch: string) =>
+  git().clone(remote, repoRoot, ['--no-hardlinks', '--single-branch', '--branch', branch]);
+
+const ORIGIN = 'origin';
+
+export const listRevisions = async (
+  repoRoot: string, branch: string, startingAfter?: string
+): Promise<Revision[]> => {
+  const repo = git(repoRoot);
+  const raw = await repo.log(startingAfter ? {from: startingAfter, to: `${ORIGIN}/${branch}`} : {});
+  return raw.all.map((logLine): Revision => ({
+    id: logLine.hash, datetime: logLine.date, message: logLine.message
+  }))
+};
+
+export const checkRemoteUpdates = async (repoRoot: string, branch: string): Promise<boolean> => {
+  const repo = git(repoRoot);
+  await repo.fetch(ORIGIN, branch);
+  return (await repo.status()).behind > 0;
+};
