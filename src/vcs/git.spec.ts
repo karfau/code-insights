@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import * as path from 'path';
 import * as fs from 'fs-extra';
-import {isRepoRoot, listRevisions} from './git';
+import {createLocalRepo, isRepoRoot, listRevisions} from './git';
 
 describe('isRepoRoot', () => {
   it('should return true for a repository root', async () => {
@@ -12,24 +12,36 @@ describe('isRepoRoot', () => {
   });
 });
 
-describe('listRevisions', () => {
+describe('createLocalRepo', () => {
   const fixtureDir = path.join(process.cwd(), '.test', 'git-fixture');
-  before('make sure the test repo is checked out in .test folder', () => {
+  before('clean start for fixture', () => {
+    fs.removeSync(fixtureDir);
+  });
+  it('should be able to clone an https repo', async () => {
+    await createLocalRepo(
+      fixtureDir, 'https://github.com/karfau/code-insights-git-fixture.git'
+    );
     expect(fs.existsSync(path.join(fixtureDir, '.git'))).to.be.true;
-  });
-  it('should list all commits with two parameters', async () => {
-    let actual = await listRevisions(fixtureDir, 'master');
-    expect(actual).to.not.be.empty;
-    expect(actual.map(rev => rev.id).slice(0, 2)).to.eql([
-      '9bbde535d46dff9e18e3dab0bc011eb433ced7ef',
-      '045c9c0d3a722abcbe8423533344aef56a7fea5c'
-      ])
-  });
 
-  it('should list one commit with lastReported being first commit', async () => {
-    const all = (await listRevisions(fixtureDir, 'master'));
-    expect(
-      await listRevisions(fixtureDir, 'master', '9bbde535d46dff9e18e3dab0bc011eb433ced7ef')
-    ).to.have.lengthOf(all.length-1);
+    describe('listRevisions', () => {
+      before('make sure the test repo is checked out in .test folder', () => {
+      });
+      it('should list all commits with two parameters', async () => {
+        let actual = await listRevisions(fixtureDir, 'master');
+        expect(actual).to.not.be.empty;
+        expect(actual.map(rev => rev.id).slice(0, 2)).to.eql([
+          '9bbde535d46dff9e18e3dab0bc011eb433ced7ef',
+          '045c9c0d3a722abcbe8423533344aef56a7fea5c'
+          ])
+      });
+
+      it('should list one commit with lastReported being first commit', async () => {
+        const all = (await listRevisions(fixtureDir, 'master'));
+        expect(
+          await listRevisions(fixtureDir, 'master', '9bbde535d46dff9e18e3dab0bc011eb433ced7ef')
+        ).to.have.lengthOf(all.length-1);
+      });
+    });
   });
 });
+

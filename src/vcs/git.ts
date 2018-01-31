@@ -9,7 +9,7 @@ export const isRepoRoot = async (path: string): Promise<boolean> => {
   return await repo.checkIsRepo() && (await repo.revparse(['--show-toplevel'])).trim() === path;
 };
 
-export const createLocalRepo = async (repoRoot: string, remote: string, branch: string) =>
+export const createLocalRepo = async (repoRoot: string, remote: string, branch: string = 'master') =>
   git().clone(remote, repoRoot, ['--no-hardlinks', '--single-branch', '--branch', branch]);
 
 const ORIGIN = 'origin';
