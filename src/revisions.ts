@@ -7,7 +7,6 @@ import {
   storeRepoStatus
 } from './fsStorage';
 import * as fs from 'fs-extra';
-import {sortBy} from 'lodash';
 
 const log: Logger = console.error;
 
@@ -43,7 +42,7 @@ log('remote:', remoteSafe, 'branch:', branch);
   status = await readRepoStatus(statusFile, status);
   let lastReported = status.reported;
 
-  const result = sortBy(await listRevisions(target, branch, lastReported), 'datetime');
+  const result = await listRevisions(target, branch, lastReported);
 
   if (result.length === 0) {
     log('no news');

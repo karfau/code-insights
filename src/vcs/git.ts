@@ -1,3 +1,4 @@
+import {sortBy} from 'lodash';
 import * as git from 'simple-git/promise';
 import {Revision} from './types';
 
@@ -17,10 +18,12 @@ export const listRevisions = async (
   repoRoot: string, branch: string, startingAfter?: string
 ): Promise<Revision[]> => {
   const repo = git(repoRoot);
-  const raw = await repo.log(startingAfter ? {from: startingAfter, to: `${ORIGIN}/${branch}`} : {});
-  return raw.all.map((logLine): Revision => ({
+  const raw = sortBy((await repo.log()).all, 'date');
+  const from = raw.findIndex(logLine => logLine.hash === startingAfter) + 1;
+
+  return raw.slice(from).map((logLine): Revision => ({
     id: logLine.hash, datetime: logLine.date, message: logLine.message
-  }))
+  }));
 };
 
 export const checkRemoteUpdates = async (repoRoot: string, branch: string): Promise<boolean> => {
