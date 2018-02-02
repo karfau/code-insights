@@ -2,6 +2,8 @@ import {sortBy} from 'lodash';
 import * as git from 'simple-git/promise';
 import {Revision} from './types';
 
+export const MASTER = 'master';
+
 export const isRepoRoot = async (path: string): Promise<boolean> => {
   const repo = git(path);
   // in case the target path is inside another git repo, checkIsRepo returns true,
@@ -9,7 +11,7 @@ export const isRepoRoot = async (path: string): Promise<boolean> => {
   return await repo.checkIsRepo() && (await repo.revparse(['--show-toplevel'])).trim() === path;
 };
 
-export const createLocalRepo = async (repoRoot: string, remote: string, branch: string = 'master') =>
+export const createLocalRepo = async (repoRoot: string, remote: string, branch: string = MASTER) =>
   git().clone(remote, repoRoot, ['--no-hardlinks', '--single-branch', '--branch', branch]);
 
 const ORIGIN = 'origin';
@@ -26,7 +28,7 @@ export const listRevisions = async (
   }));
 };
 
-export const checkRemoteUpdates = async (repoRoot: string, branch: string): Promise<boolean> => {
+export const fetchRemoteUpdates = async (repoRoot: string, branch: string): Promise<boolean> => {
   const repo = git(repoRoot);
   await repo.fetch(ORIGIN, branch);
   return (await repo.status()).behind > 0;

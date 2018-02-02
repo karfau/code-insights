@@ -23,6 +23,7 @@ describe('createLocalRepo', () => {
     fs.removeSync(fixtureDir);
   });
 
+  // TODO: clone from file system, check for no hard links
   it('should be able to clone an https repo', async () => {
     await createLocalRepo(fixtureDir, CODE_INSIGHTS_GIT_FIXTURE);
     expect(fs.existsSync(path.join(fixtureDir, '.git'))).to.be.true;

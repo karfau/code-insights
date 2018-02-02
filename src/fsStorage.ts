@@ -24,3 +24,5 @@ export const storeRepoStatus = (file: string, status: RepoStatus) =>
 
 export const readRepoStatus = (file: string, defaultStatus: RepoStatus): RepoStatus =>
   fs.pathExistsSync(file) ? fs.readJSONSync(file) : defaultStatus;
+
+export * from 'fs-extra';

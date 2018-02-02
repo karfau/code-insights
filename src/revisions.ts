@@ -1,14 +1,11 @@
 import {config as dotenv} from 'dotenv';
 import {Logger, RepoStatus} from './types';
-import {checkRemoteUpdates, createLocalRepo, isRepoRoot, listRevisions} from './vcs/git';
+import {fetchRemoteUpdates, createLocalRepo, isRepoRoot, listRevisions, MASTER} from './vcs/git';
 import {ENV_DATA_DIR, ENV_DATA_DIR_DEFAULT} from './constants';
-import {
-  readRepoStatus, resolveIfRelative, resolveRepoWorkingDir,
-  storeRepoStatus
-} from './fsStorage';
-import * as fs from 'fs-extra';
+import * as fs from './fsStorage';
 
 const log: Logger = console.error;
+const writeData: (...args: string[]) => void = console.log;
 
 if (process.argv.length < 3) {
   log('first argument needs to be a git remote');
@@ -17,12 +14,12 @@ if (process.argv.length < 3) {
 const [ , , ...cliArgs] = process.argv;
 // in case it is a relative path we want to make it absolute,
 // so we can have a reliable identifier later on
-const remoteSafe = resolveIfRelative(cliArgs[0]);
+const remoteSafe = fs.resolveIfRelative(cliArgs[0]);
 
-const branch = cliArgs[1] || 'HEAD';
+const branch = cliArgs[1] || MASTER;
 
 dotenv();
-const target = resolveRepoWorkingDir(remoteSafe, process.env[ENV_DATA_DIR] || ENV_DATA_DIR_DEFAULT);
+const target = fs.resolveRepoWorkingDir(remoteSafe, process.env[ENV_DATA_DIR] || ENV_DATA_DIR_DEFAULT);
 const statusFile = `${target}.status.json`;
 
 log(ENV_DATA_DIR, target);
@@ -35,11 +32,11 @@ log('remote:', remoteSafe, 'branch:', branch);
   let status: RepoStatus = {branch};
   if (!existingRepo) {
     await createLocalRepo(target, remoteSafe, branch);
-    storeRepoStatus(statusFile, status);
+    fs.storeRepoStatus(statusFile, status);
   }
-  await checkRemoteUpdates(target, branch);
+  await fetchRemoteUpdates(target, branch);
 
-  status = await readRepoStatus(statusFile, status);
+  status = await fs.readRepoStatus(statusFile, status);
   let lastReported = status.reported;
 
   const result = await listRevisions(target, branch, lastReported);
@@ -49,11 +46,11 @@ log('remote:', remoteSafe, 'branch:', branch);
     return;
   }
 
-  console.log('rev,datetime');
+  writeData('rev,datetime');
   result.forEach(rev => {
-    console.log(rev.id, rev.datetime);
+    writeData(rev.id, rev.datetime);
     status.reported = rev.id;
-    storeRepoStatus(statusFile, status);
+    fs.storeRepoStatus(statusFile, status);
   });
 })().catch(error => {
   log('unexpected error', error);
