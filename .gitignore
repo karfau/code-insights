@@ -79,3 +79,4 @@ typings/
 
 # vim
 .*.sw?
+/.test/
